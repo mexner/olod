@@ -46,6 +46,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CustomCredentials.cs" />
+    <Compile Include="Helper.cs" />
+    <Compile Include="POCOS\Address.cs" />
+    <Compile Include="POCOS\Donation.cs" />
+    <Compile Include="POCOS\DonationAddress.cs" />
+    <Compile Include="POCOS\Donor.cs" />
+    <Compile Include="POCOS\DonorAddress.cs" />
+    <Compile Include="POCOS\Enums\HowToHandleOverMatch.cs" />
+    <Compile Include="POCOS\Enum_AddressType.cs" />
+    <Compile Include="POCOS\Enum_CardBrand.cs" />
+    <Compile Include="POCOS\Enum_ChargeStatus.cs" />
+    <Compile Include="POCOS\Enum_Frequency.cs" />
+    <Compile Include="POCOS\Enum_PayFreq.cs" />
+    <Compile Include="POCOS\Enum_PaymentMethod.cs" />
+    <Compile Include="POCOS\Enum_PaymentStatus.cs" />
+    <Compile Include="POCOS\Partials\Address.cs" />
+    <Compile Include="POCOS\Partials\Donation.cs" />
+    <Compile Include="POCOS\Partials\Donor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service References\OLODWebService\Reference.cs">
