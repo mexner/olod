@@ -1,0 +1,387 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2C2DCCE4-F353-444F-A18C-FB0A41F2AA72}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>OLOD_DEMO</RootNamespace>
+    <AssemblyName>OLOD-DEMO</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CustomCredentials.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service References\OLODWebService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.AddPickListItemByNameResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.AddPickListItemByNameResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.BulkAddCommunicationHistoryResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.BulkAddCommunicationHistoryResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.communicationHistory.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.constituent.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.CreateDefaultConstituentResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.customTable.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.customTableField.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.customTableRow.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.FindConstituentsResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetCommunicationHistoryCountResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetCommunicationHistoryCountResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetCommunicationHistoryResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetConstituentByIdResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetConstituentByIdResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetConstituentByListIdResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetConstituentByPaymentSourceResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetConstituentByPaymentSourceResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetConstituentGiftCountResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetConstituentGiftCountResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetConstituentGiftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetConstituentGiftSummaryResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetConstituentPledgeCountResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetConstituentPledgeCountResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetConstituentPledgeResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetConstituentRecurringGiftCountResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetConstituentRecurringGiftCountResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetConstituentRecurringGiftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetCustomTableConstituentContextFieldResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetCustomTableConstituentContextFieldResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetCustomTableRowCountResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetCustomTableRowCountResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetCustomTableRowsResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetCustomTableTitleFieldResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetCustomTableTitleFieldResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetDetailCustomTableRowsResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetEntityResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetEntityResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetJobResultResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetJobResultResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetJobStatusResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetJobStatusResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetListDetailCustomTablesResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetListEntityRelatedCustomTablesResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetListMasterCustomTablesResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetPaymentSourcesByConstituentIdResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetPickListByNameResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetPickListByNameResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetPickListsCountResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetPickListsCountResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetPickListsResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetPostalCodesByRadiusResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetSegmentationByIdResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetSegmentationByNameResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetSegmentationListByTypeCountResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetSegmentationListByTypeCountResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetSegmentationListByTypeResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetSegmentationListCountResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetSegmentationListCountResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.GetSegmentationListResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.gift.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.giftSummary.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.ImportDataResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.ImportDataResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.ImportResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.ImportResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.ListCustomTableFieldsResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.ListCustomTablesResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.ListEntitiesResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.ListEntitiesResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.paymentSource.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.picklist.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.pledge.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.postalCodeByRadius.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.ReadCustomTableByIdResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.ReadCustomTableByIdResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.ReadCustomTableByNameResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.ReadCustomTableByNameResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.ReadCustomTableFieldByIdResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.ReadCustomTableFieldByIdResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.ReadCustomTableRowResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.ReadCustomTableRowResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.recurringGift.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.SaveOrUpdateCommunicationHistoryResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.SaveOrUpdateCommunicationHistoryResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.SaveOrUpdateConstituentResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.SaveOrUpdateConstituentResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.SaveOrUpdateCustomTableRowResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.SaveOrUpdateCustomTableRowResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.SaveOrUpdateGiftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.SaveOrUpdateGiftResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.SaveOrUpdatePledgeResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.SaveOrUpdatePledgeResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.SaveOrUpdateRecurringGiftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.SaveOrUpdateRecurringGiftResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.SearchConstituentsResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.segmentation.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.SetEntityResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\OLOD_DEMO.OLODWebService.SetEntityResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OLODWebService\orangeleap.wsdl" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\OLODWebService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\OLODWebService\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\OLODWebService\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\OLODWebService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
