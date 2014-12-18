@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.ServiceModel;
+using System.ServiceModel.Channels;
 using OLOD_DEMO.OLODWebService;
 using Pocos;
 
@@ -208,6 +210,16 @@ namespace OLOD_DEMO
                 var response = _client.SaveOrUpdateConstituent(request);
                 return response.constituent;
             }
+            catch (FaultException exception)
+            {
+                Type exType = exception.GetType();
+                MessageFault mf = exception.CreateMessageFault();
+                if (mf.HasDetail)
+                {
+                    var detailedMessage = mf.GetDetail<System.Xml.Linq.XElement>();
+                    String message = detailedMessage.FirstNode.ToString();
+                }
+            }
             catch (Exception exc)
             {
                 var txt = exc;
@@ -239,6 +251,16 @@ namespace OLOD_DEMO
                     _client.SaveOrUpdateConstituent(saveOrUpdateConstituentRequest);
                 }
             }
+            catch (FaultException exception)
+            {
+                Type exType = exception.GetType();
+                MessageFault mf = exception.CreateMessageFault();
+                if (mf.HasDetail)
+                {
+                    var detailedMessage = mf.GetDetail<System.Xml.Linq.XElement>();
+                    String message = detailedMessage.FirstNode.ToString();
+                }
+            }
             catch (Exception exc)
             {
                 var txt = exc;
@@ -264,6 +286,16 @@ namespace OLOD_DEMO
                     _client.SaveOrUpdateConstituent(saveOrUpdateConstituentRequest);
                 }
             }
+            catch (FaultException exception)
+            {
+                Type exType = exception.GetType();
+                MessageFault mf = exception.CreateMessageFault();
+                if (mf.HasDetail)
+                {
+                    var detailedMessage = mf.GetDetail<System.Xml.Linq.XElement>();
+                    String message = detailedMessage.FirstNode.ToString();
+                }
+            }
             catch (Exception exc)
             {
                 var txt = exc;
@@ -281,6 +313,16 @@ namespace OLOD_DEMO
                 {
                     var saveOrUpdateConstituentRequest = new SaveOrUpdateConstituentRequest { constituent = constt };
                     _client.SaveOrUpdateConstituent(saveOrUpdateConstituentRequest);
+                }
+            }
+            catch (FaultException exception)
+            {
+                Type exType = exception.GetType();
+                MessageFault mf = exception.CreateMessageFault();
+                if (mf.HasDetail)
+                {
+                    var detailedMessage = mf.GetDetail<System.Xml.Linq.XElement>();
+                    String message = detailedMessage.FirstNode.ToString();
                 }
             }
             catch (Exception exc)
@@ -382,6 +424,16 @@ namespace OLOD_DEMO
 
                 Console.WriteLine("Successfully sent gift to OLOD, gift ID: " + response.gift.id + ".");
             }
+            catch (FaultException exception)
+            {
+                Type exType = exception.GetType();
+                MessageFault mf = exception.CreateMessageFault();
+                if (mf.HasDetail)
+                {
+                    var detailedMessage = mf.GetDetail<System.Xml.Linq.XElement>();
+                    String message = detailedMessage.FirstNode.ToString();
+                }
+            }
             catch (Exception exc)
             {
                 var text = exc;
@@ -399,10 +451,25 @@ namespace OLOD_DEMO
                 if (includeLname && !string.IsNullOrEmpty(d.LName)) request.lastName = d.LName;
 
                 //VALIDATION ERROR
-                if (includeEmail && !string.IsNullOrEmpty(d.Email)) request.primaryEmail = new email() { emailAddress = d.Email, primary = true};
-                if (includePhone && !string.IsNullOrEmpty(d.Phone)) request.primaryPhone = new phone() { number = d.Phone, primary = true};
+                if (includeEmail && !string.IsNullOrEmpty(d.Email)) 
+                    request.primaryEmail = new email() 
+                                                    { 
+                                                        emailAddress = d.Email, 
+                                                        primary = true, 
+                                                        createDate = DateTime.Now, 
+                                                        updateDate = DateTime.Now, 
+                                                        customFieldMap = new abstractCustomizableEntityEntry[0]
+                                                    };
 
-
+                if (includePhone && !string.IsNullOrEmpty(d.Phone)) 
+                    request.primaryPhone = new phone()
+                                                    {
+                                                        number = d.Phone,
+                                                        primary = true, 
+                                                        createDate = DateTime.Now, 
+                                                        updateDate = DateTime.Now, 
+                                                        customFieldMap = new abstractCustomizableEntityEntry[0]
+                                                    };
                 //VALIDATION ERROR
                 var billingAddress = d.GetAddress(Enum_AddressType.Billing);
                 if (billingAddress != null && includeAddress)
@@ -411,8 +478,11 @@ namespace OLOD_DEMO
                                                  {
                                                      postalCode = billingAddress.Zip,
                                                      addressLine1 = billingAddress.Address1,
-                                                     city = billingAddress.City
-                                                 };
+                                                     city = billingAddress.City,
+                                                     createDate = DateTime.Now, 
+                                                     updateDate = DateTime.Now, 
+                                                     customFieldMap = new abstractCustomizableEntityEntry[0]
+                                                };
                 }
 
             
@@ -426,9 +496,15 @@ namespace OLOD_DEMO
                     results.AddRange(response);
                 }
             }
-            catch (System.ServiceModel.FaultException exc)
+            catch (FaultException exception)
             {
-                var txt = exc;
+                Type exType = exception.GetType();
+                MessageFault mf = exception.CreateMessageFault();
+                if (mf.HasDetail)
+                {
+                    var detailedMessage = mf.GetDetail<System.Xml.Linq.XElement>();
+                    String message = detailedMessage.FirstNode.ToString();
+                }
             }
             catch (System.Web.Services.Protocols.SoapException exception)
             {
