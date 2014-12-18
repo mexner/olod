@@ -71,11 +71,29 @@ namespace OLOD_DEMO
             }
             if (!donors.Any())
             {
+                //FName, Lname, Phone
+                donors = Find(donation.Donor, true, true, false, true, false);
+                if (donors.Any())
+                {
+                    Console.WriteLine("Located donor(s) by matching FName, LName, & Phone. ");
+                }
+            }
+            if (!donors.Any())
+            {
                 //Email
                 donors = Find(donation.Donor, false, false, true, false, false);
                 if (donors.Any())
                 {
                     Console.WriteLine("Located donor(s) by matching Email. ");
+                }
+            }
+            if (!donors.Any())
+            {
+                //FName, Lname
+                donors = Find(donation.Donor, true, true, false, false, false);
+                if (donors.Any())
+                {
+                    Console.WriteLine("Located donor(s) by matching FName, LName. ");
                 }
             }
 
@@ -87,6 +105,7 @@ namespace OLOD_DEMO
                     constt = donors.First();
                     //UpdateConstituent(d.Donor, constt);
                     Console.WriteLine("Found 1 donor, perfect match! ");
+                    UpdateConstituent(donation.Donor, ref constt);
                 }
                 else
                 {
