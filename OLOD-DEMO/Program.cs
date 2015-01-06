@@ -23,9 +23,54 @@ namespace OLOD_DEMO
 
             var donor = new Pocos.Donor();
             var donation = new Pocos.Donation();
+            
             InitObjects(ref donation, ref donor);
+            
+            //var constt = CreateConstituentWithAllProperties(donor);
+            //Console.WriteLine("created const! id: " + constt.id.ToString());
+            //Console.ReadLine();
 
-            SendDonation(donation);
+            var constt = Find(4618);
+            UpdateConstituent(donor, ref constt, "Just adding a test note, b/c i'm testing!");
+
+            //var donors = Find(donor, true, true, false, false, false);
+            //constituent constt;
+
+            //if (donors.Any())
+            //{
+            //    if (donors.Count == 1)
+            //    {
+            //        constt = donors.First();
+            //        UpdateConstituent(donor, ref constt);
+            //    }
+            //    else
+            //    {
+            //        switch (_howToHandleOverMatch)
+            //        {
+            //            case Enum_HowToHandleOverMatch.Use_Oldest_Record:
+            //                constt = donors.OrderBy(x => x.updateDate).First();
+            //                UpdateConstituent(donor, ref constt);
+            //                break;
+            //            case Enum_HowToHandleOverMatch.Use_Newest_Record:
+            //                constt = donors.OrderByDescending(x => x.updateDate).First();
+            //                UpdateConstituent(donor, ref constt);
+            //                break;
+            //            case Enum_HowToHandleOverMatch.Create_New_Record:
+            //                constt = CreateConstituentWithAllProperties(donor);
+            //                break;
+            //            case Enum_HowToHandleOverMatch.Create_New_Record_And_Be_Notified:
+            //                constt = CreateConstituentWithAllProperties(donor);
+            //                break;
+            //            default:
+            //                throw new ArgumentOutOfRangeException();
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    //create new donor
+            //    constt = CreateConstituentWithAllProperties(donor);
+            //}
         }
         
         public static void SendDonation(Donation donation)
@@ -198,45 +243,96 @@ namespace OLOD_DEMO
             //send email
         }
 
+        private static abstractCustomizableEntityEntry AddCommunicationPreferences(Donor d)
+        {
+            //add opt in preferences to donor
+            var fm = new abstractCustomizableEntityEntry()
+            {
+                key = "communicationPreferences",
+                value = new customField()
+                {
+                    name = "communicationPreferences",
+                    value = d.NesletterOptIn ? "Opt In" : "Unknown",
+                    entityType = "constituent",
+                    sequenceNumber = 0,
+                    dataType = 0,
+                }
+            };
+
+            return fm;
+        }
+
+        private static abstractCustomizableEntityEntry AddSourceCodeToConstintuent(Donor d)
+        {
+            //add source code to donor
+            var fm = new abstractCustomizableEntityEntry()
+            {
+                key = "source",
+                value = new customField()
+                {
+                    name = "source",
+                    value = RetrieveSourceCodePickList().First().itemName,
+                    entityType = "constituent",
+                    sequenceNumber = 0,
+                    dataType = 0,
+                }
+            };
+
+            return fm;
+        }
+
+        private static constituent CreateConstituentWithAllProperties(Donor donor)
+        {
+            var constt = CreateConstituent(donor);
+
+            if (constt == null) throw new Exception("Unable to create new constituent.");
+
+            AddPhoneToConstituent(donor, ref constt, true, true);
+            AddEmailToConstituent(donor, ref constt, true, true);
+
+            var billing = donor.DonorAddresses.FirstOrDefault(x => x.AddressType == Enum_AddressType.Billing);
+            if (billing != null) AddAddressToConstituent(billing, ref constt, true, true);
+
+            var shipping = donor.DonorAddresses.FirstOrDefault(x => x.AddressType == Enum_AddressType.Shipping);
+            if (shipping != null) AddAddressToConstituent(shipping, ref constt, true, true);
+
+            return constt;
+        }
+
         private static constituent CreateConstituent(Donor d)
         {
             var constt = new constituent();
                 
             try
             {
-                var site = new site();
-                var fieldMap = new abstractCustomizableEntityEntry[0];
+                var fieldMap = new abstractCustomizableEntityEntry[2];
 
-                site.name = "RaiseDonors";
+                fieldMap[0] = AddSourceCodeToConstintuent(d);
+                fieldMap[1] = AddCommunicationPreferences(d);
 
                 constt.firstName = d.FName;
                 constt.lastName = d.LName;
                 constt.constituentType = "individual";
-                constt.site = site;
                 constt.customFieldMap = fieldMap;
-
-                AddPhoneToConstituent(d, ref constt, true, false);
-                AddEmailToConstituent(d, ref constt, true, false);
-
-                var billing = d.DonorAddresses.FirstOrDefault(x => x.AddressType == Enum_AddressType.Billing);
-                if (billing != null) AddAddressToConstituent(billing, ref constt, true, false);
-
-                var shipping = d.DonorAddresses.FirstOrDefault(x => x.AddressType == Enum_AddressType.Shipping);
-                if (shipping != null) AddAddressToConstituent(shipping, ref constt, true, false);
-
-                var request = new SaveOrUpdateConstituentRequest {constituent = constt};
-
+                constt.inactive = false;
+                constt.createDate = DateTime.Now;
+                constt.updateDate = DateTime.Now;
+                
+                var request = new SaveOrUpdateConstituentRequest { constituent = constt };
                 var response = _client.SaveOrUpdateConstituent(request);
+               
                 return response.constituent;
             }
             catch (FaultException exception)
             {
                 Type exType = exception.GetType();
                 MessageFault mf = exception.CreateMessageFault();
+                Console.WriteLine("Error when creating constituent // " + exception.Message);
                 if (mf.HasDetail)
                 {
                     var detailedMessage = mf.GetDetail<System.Xml.Linq.XElement>();
                     String message = detailedMessage.FirstNode.ToString();
+                    Console.WriteLine("More details // " + message);
                 }
             }
             catch (Exception exc)
@@ -246,9 +342,81 @@ namespace OLOD_DEMO
             return null;
         }
 
-        private static void UpdateConstituent(Donor d, ref constituent constt)
+        private static IEnumerable<picklistItem> RetrieveSourceCodePickList()
+        {
+            var req = new GetPickListByNameRequest() {includeInactive = false, name = "customFieldMap[source]"};
+
+            var resp = _client.GetPickListByName(req);
+            var pics = resp.picklist;
+            var sources = pics.picklistItems;
+
+            return sources;
+        }
+
+        private static void AddCommunicationHistoryToDonor(string note, ref constituent c)
+        {
+            try
+            {
+                var req = new SaveOrUpdateCommunicationHistoryRequest();
+                req.constituentId = c.id;
+                
+                var history = new communicationHistory();
+                history.comments = note;
+                history.communicationHistoryType = "MANUAL";
+                history.constituentId = c.id;
+                history.createDate = DateTime.Now;
+                history.entryType = "Note"; //pick list during setup, let admin decide.
+                history.updateDate = DateTime.Now;
+                history.customFieldMap = new abstractCustomizableEntityEntry[0];
+
+                req.communicationHistory = history;
+
+                var resp = _client.SaveOrUpdateCommunicationHistory(req);
+                var his = resp.communicationHistory;
+            }
+            catch (FaultException exception)
+            {
+                Type exType = exception.GetType();
+                MessageFault mf = exception.CreateMessageFault();
+                Console.WriteLine("Error when add phone to constituent // " + exception.Message);
+                if (mf.HasDetail)
+                {
+                    var detailedMessage = mf.GetDetail<System.Xml.Linq.XElement>();
+                    String message = detailedMessage.FirstNode.ToString();
+                    Console.WriteLine("More details // " + message);
+                }
+            }
+            catch (Exception exc)
+            {
+                var txt = exc;
+            }
+        }
+
+        private static void UpdateConstituent(Donor d, ref constituent c, string noteHistory = "")
         {
             //update fields
+            c.lastName = d.LName;
+            c.firstName = d.FName;
+            c.updateDate = DateTime.Now;
+            
+            var request = new SaveOrUpdateConstituentRequest { constituent = c };
+            var response = _client.SaveOrUpdateConstituent(request);
+            var nc = response.constituent;
+
+            AddPhoneToConstituent(d, ref c, true, true);
+            AddEmailToConstituent(d, ref c, true, true);
+
+            var billing = d.DonorAddresses.FirstOrDefault(x => x.AddressType == Enum_AddressType.Billing);
+            if (billing != null) AddAddressToConstituent(billing, ref c, true, true);
+
+            var shipping = d.DonorAddresses.FirstOrDefault(x => x.AddressType == Enum_AddressType.Shipping);
+            if (shipping != null) AddAddressToConstituent(shipping, ref c, true, true);
+
+            if (!string.IsNullOrEmpty(noteHistory))
+            {
+                AddCommunicationHistoryToDonor(noteHistory, ref c);
+            }
+
         }
 
         private static void AddPhoneToConstituent(Donor d, ref constituent constt, bool setPrimary = false, bool SendToApi = false)
@@ -260,9 +428,25 @@ namespace OLOD_DEMO
                     number = d.Phone,
                     inactive = false,
                     primary = setPrimary,
+                    createDate = DateTime.Now,
+                    updateDate = DateTime.Now,
+                    customFieldMap = new abstractCustomizableEntityEntry[0],
                 };
 
-                constt.phones.ToList().Add(phone);
+                //check if is null or already has phone.
+                if (constt.phones == null)
+                {
+                    constt.phones = new phone[1];
+                    constt.phones[0] = phone;
+                }
+                else
+                {
+                    var newmax = constt.phones.Count() + 1;
+                    var newArray = new phone[newmax];
+                    constt.phones.CopyTo(newArray, 0);
+                    newArray[newmax - 1] = phone;
+                    constt.phones = newArray;
+                }
 
                 if (SendToApi)
                 {
@@ -274,10 +458,12 @@ namespace OLOD_DEMO
             {
                 Type exType = exception.GetType();
                 MessageFault mf = exception.CreateMessageFault();
+                Console.WriteLine("Error when add phone to constituent // " + exception.Message);
                 if (mf.HasDetail)
                 {
                     var detailedMessage = mf.GetDetail<System.Xml.Linq.XElement>();
                     String message = detailedMessage.FirstNode.ToString();
+                    Console.WriteLine("More details // " + message);
                 }
             }
             catch (Exception exc)
@@ -295,9 +481,24 @@ namespace OLOD_DEMO
                     emailAddress = d.Email,
                     emailDisplay = d.FullName,
                     primary = setPrimary,
+                    createDate = DateTime.Now,
+                    updateDate = DateTime.Now,
+                    customFieldMap = new abstractCustomizableEntityEntry[0],
                 };
 
-                constt.emails.ToList().Add(email);
+                if (constt.emails == null)
+                {
+                    constt.emails = new email[1];
+                    constt.emails[0] = email;
+                }
+                else
+                {
+                    var newmax = constt.emails.Count() + 1;
+                    var newArray = new email[newmax];
+                    constt.emails.CopyTo(newArray, 0);
+                    newArray[newmax - 1] = email;
+                    constt.emails = newArray;
+                }
 
                 if (SendToApi)
                 {
@@ -309,10 +510,12 @@ namespace OLOD_DEMO
             {
                 Type exType = exception.GetType();
                 MessageFault mf = exception.CreateMessageFault();
+                Console.WriteLine("Error when adding email to constituent // " + exception.Message);
                 if (mf.HasDetail)
                 {
                     var detailedMessage = mf.GetDetail<System.Xml.Linq.XElement>();
                     String message = detailedMessage.FirstNode.ToString();
+                    Console.WriteLine("More details // " + message);
                 }
             }
             catch (Exception exc)
@@ -326,7 +529,23 @@ namespace OLOD_DEMO
             try
             {
                 var address = TranslateAddress(add, setPrimary);
-                constt.addresses.ToList().Add(address);
+                address.createDate = DateTime.Now;
+                address.updateDate = DateTime.Now;
+                address.customFieldMap = new abstractCustomizableEntityEntry[0];
+                
+                if (constt.addresses == null)
+                {
+                    constt.addresses = new address[1];
+                    constt.addresses[0] = address;
+                }
+                else
+                {
+                    var newmax = constt.addresses.Count() + 1;
+                    var newArray = new address[newmax];
+                    constt.addresses.CopyTo(newArray, 0);
+                    newArray[newmax - 1] = address;
+                    constt.addresses = newArray;
+                }
 
                 if (sendToApi)
                 {
@@ -338,10 +557,12 @@ namespace OLOD_DEMO
             {
                 Type exType = exception.GetType();
                 MessageFault mf = exception.CreateMessageFault();
+                Console.WriteLine("Error when adding address to constituent // " + exception.Message);
                 if (mf.HasDetail)
                 {
                     var detailedMessage = mf.GetDetail<System.Xml.Linq.XElement>();
                     String message = detailedMessage.FirstNode.ToString();
+                    Console.WriteLine("More details // " + message);
                 }
             }
             catch (Exception exc)
@@ -397,14 +618,14 @@ namespace OLOD_DEMO
                 g.authCode = donation.AuthorizationNumber;
                 g.comments = "Processed by RaiseDonors using card ending in x" + donation.Last4ofCC;
                 if (!string.IsNullOrEmpty(donation.Comment)) g.comments += "Donor provided comment: " + donation.Comment;
-                //g.createDate = nowDate;
+                g.createDate = nowDate;
                 //g.createDateSpecified = true;
                 g.currencyCode = "USD";
                 g.customFieldMap = fieldMap;
                 g.constituentId = constt.id;
                 g.deductible = false;
                 g.deductibleAmount = 0.00m;
-                //g.donationDate = nowDate;
+                g.donationDate = nowDate;
                 //g.donationDateSpecified = true;
                 g.email = constt.primaryEmail;
                 g.giftStatus = "Paid";  //Paid, Pending, Not Paid 
@@ -425,11 +646,12 @@ namespace OLOD_DEMO
                     customFieldMap = fieldMap,
                     amount = donation.Amount,
                     other_motivationCode = donation.MotivationCode,
-                    percentage = 100,
+                    percentage = 100, 
                     motivationCode = "",  //what motivated to give - don't use this one
                     projectCode = "RaiseDonors" //gift designation? 
                 };
 
+                
                 //source-code, use customfield on the gift.
                 //project, and source will throw error if not pre-existing.
 
@@ -447,10 +669,12 @@ namespace OLOD_DEMO
             {
                 Type exType = exception.GetType();
                 MessageFault mf = exception.CreateMessageFault();
+                Console.WriteLine("Error when adding gift to constituent // " + exception.Message);
                 if (mf.HasDetail)
                 {
                     var detailedMessage = mf.GetDetail<System.Xml.Linq.XElement>();
                     String message = detailedMessage.FirstNode.ToString();
+                    Console.WriteLine("More details // " + message);
                 }
             }
             catch (Exception exc)
@@ -460,6 +684,14 @@ namespace OLOD_DEMO
             
         }
       
+        private static constituent Find(long Id)
+        {
+            var req = new GetConstituentByIdRequest() {id = Id};
+            var resp = _client.GetConstituentById(req);
+
+            return resp.constituent;
+        }
+
         private static List<constituent> Find(Donor d, bool includeFname = true, bool includeLname = true, bool includeEmail = true, bool includePhone = true, bool includeAddress = true)
         {
             var results = new List<constituent>();
@@ -519,10 +751,12 @@ namespace OLOD_DEMO
             {
                 Type exType = exception.GetType();
                 MessageFault mf = exception.CreateMessageFault();
+                Console.WriteLine("Error when finding constituent // " + exception.Message);
                 if (mf.HasDetail)
                 {
                     var detailedMessage = mf.GetDetail<System.Xml.Linq.XElement>();
                     String message = detailedMessage.FirstNode.ToString();
+                    Console.WriteLine("More details // " + message);
                 }
             }
             catch (System.Web.Services.Protocols.SoapException exception)
@@ -549,56 +783,59 @@ namespace OLOD_DEMO
             }
         }
 
-        #region Init Objects
-        protected static DonorAddress CreateDonorAddress(Enum_AddressType type, Pocos.Donor d)
+        protected static string LookupCountryCodeFromPickList(string ourCountryName)
         {
-            var a = new Pocos.DonorAddress
+            var req = new GetPickListByNameRequest {includeInactive = false, name = "country"};
+
+            var resp = _client.GetPickListByName(req);
+            var picks = resp.picklist;
+            var countries = picks.picklistItems;
+
+            //our country look up
+            var countryDto = CountryFinder.FindCountry(ourCountryName);
+
+            foreach (var c in countries)
             {
-                Address1 = "123 Main St.",
-                AddressType = type,
-                City = "Dallas",
-                State = "TX",
-                Zip = "75287",
-                Country = "USA",
-                FName = d.FName,
-                LName = d.LName,
-                Email = d.Email,
-                Phone = d.Phone
-            };
-            return a;
+                if (c.itemName.Trim().ToLower() == countryDto.Iso2.Trim().ToLower()) return c.itemName;
+                if (c.itemName.Trim().ToLower() == countryDto.Iso3.Trim().ToLower()) return c.itemName;
+                if (c.itemName.Trim().ToLower() == countryDto.Name.Trim().ToLower()) return c.itemName;
+
+                if (c.defaultDisplayValue.Trim().ToLower() == countryDto.Iso2.Trim().ToLower()) return c.itemName;
+                if (c.defaultDisplayValue.Trim().ToLower() == countryDto.Iso3.Trim().ToLower()) return c.itemName;
+                if (c.defaultDisplayValue.Trim().ToLower() == countryDto.Name.Trim().ToLower()) return c.itemName;
+
+                if (c.longDescription.Trim().ToLower() == countryDto.Iso2.Trim().ToLower()) return c.itemName;
+                if (c.longDescription.Trim().ToLower() == countryDto.Iso3.Trim().ToLower()) return c.itemName;
+                if (c.longDescription.Trim().ToLower() == countryDto.Name.Trim().ToLower()) return c.itemName;
+            }
+
+            return "US";
         }
 
-        protected static DonationAddress CreateAddress(Enum_AddressType type, Pocos.Donor d)
+        #region Init Objects
+        private static string GetRandomNumer()
         {
-            var add = new Pocos.DonationAddress
-            {
-                Address1 = "123 Plaza Way",
-                AddressType = type,
-                City = "Dallas",
-                State = "TX",
-                Zip = "75287",
-                Country = "USA",
-                FName = d.FName,
-                LName = d.LName,
-                Email = d.Email,
-                Phone = d.Phone
-            };
-
-            return add;
+            var r = new Random(DateTime.Now.Millisecond);
+            return r.Next(0, 9999).ToString();
         }
 
         public static void InitObjects(ref Donation donation, ref Donor donor)
         {
             donor = new Pocos.Donor
-            {
-                FName = "Sally",
-                LName = "Sue",
-                Phone = "123-123-1234",
-                Email = "Sally@email.com",
-            };
+                        {
+                            FName = "Sally" + GetRandomNumer(),
+                            LName = "Sues" + GetRandomNumer(),
+                            Phone = "(972) 220-1234",
+                            Email = "Sally" + GetRandomNumer() + "@email.com",
+                            NesletterOptIn = true,
+                        };
             donor.DonorAddresses.Add(CreateDonorAddress(Enum_AddressType.Billing, donor));
             donor.DonorAddresses.Add(CreateDonorAddress(Enum_AddressType.Shipping, donor));
+            CreateDonation(ref donation, ref donor);
+        }
 
+        public static void CreateDonation(ref Donation donation, ref Donor donor)
+        {
             donation = new Pocos.Donation
             {
                 Amount = 100m,
@@ -623,6 +860,45 @@ namespace OLOD_DEMO
             donation.TestMode = false;
             donation.TransactionId = "123-xyz-456-abc";
         }
+
+        protected static DonorAddress CreateDonorAddress(Enum_AddressType type, Pocos.Donor d)
+        {
+            var a = new Pocos.DonorAddress
+            {
+                Address1 = "a123 Main St.",
+                AddressType = type,
+                City = "Dallas",
+                State = "TX",
+                Zip = "75287",
+                Country = LookupCountryCodeFromPickList("us"),
+                FName = d.FName,
+                LName = d.LName,
+                Email = d.Email,
+                Phone = d.Phone
+            };
+            return a;
+        }
+
+        protected static DonationAddress CreateAddress(Enum_AddressType type, Pocos.Donor d)
+        {
+            var add = new Pocos.DonationAddress
+            {
+                Address1 = "a123 Plaza Way",
+                AddressType = type,
+                City = "Dallas",
+                State = "TX",
+                Zip = "75287",
+                Country = LookupCountryCodeFromPickList("us"),
+                FName = d.FName,
+                LName = d.LName,
+                Email = d.Email,
+                Phone = d.Phone
+            };
+
+            return add;
+        }
+
+       
         #endregion
     }
 }
