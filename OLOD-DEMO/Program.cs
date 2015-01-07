@@ -31,7 +31,9 @@ namespace OLOD_DEMO
             //Console.ReadLine();
 
             var constt = Find(4618);
-            UpdateConstituent(donor, ref constt, "Just adding a test note, b/c i'm testing!");
+            AddGiftToConstituent(donation, ref constt);
+
+            //UpdateConstituent(donor, ref constt, "Just adding a test note, b/c i'm testing!");
 
             //var donors = Find(donor, true, true, false, false, false);
             //constituent constt;
@@ -271,7 +273,7 @@ namespace OLOD_DEMO
                 value = new customField()
                 {
                     name = "source",
-                    value = RetrieveSourceCodePickList().First().itemName,
+                    value = SourceCodePickList().First().itemName,
                     entityType = "constituent",
                     sequenceNumber = 0,
                     dataType = 0,
@@ -342,9 +344,50 @@ namespace OLOD_DEMO
             return null;
         }
 
-        private static IEnumerable<picklistItem> RetrieveSourceCodePickList()
+        /// <summary>
+        /// retrieves pick list of motivation codes
+        /// </summary>
+        /// <returns></returns>
+        public static List<picklistItem> TouchPointCodePickList()
         {
-            var req = new GetPickListByNameRequest() {includeInactive = false, name = "customFieldMap[source]"};
+            return GetPickLists("entryType").ToList();
+        }
+
+        /// <summary>
+        /// retrieves pick list of motivation codes
+        /// </summary>
+        /// <returns></returns>
+        public static List<picklistItem> MotivationCodePickList()
+        {
+            return GetPickLists("motivationCode").ToList();
+        }
+
+        /// <summary>
+        /// retrieves pick list of motivation codes
+        /// </summary>
+        /// <returns></returns>
+        public static List<picklistItem> FundNamePickList()
+        {
+            return GetPickLists("projectCode").ToList();
+        }
+
+        /// <summary>
+        /// retrieves pick list of source codes.
+        /// </summary>
+        /// <returns></returns>
+        public static List<picklistItem> SourceCodePickList()
+        {
+            return GetPickLists("customFieldMap[source]").ToList();
+        }
+
+        /// <summary>
+        /// retrieves items from pick list.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private static IEnumerable<picklistItem> GetPickLists(string name)
+        {
+            var req = new GetPickListByNameRequest() { includeInactive = false, name = name };
 
             var resp = _client.GetPickListByName(req);
             var pics = resp.picklist;
@@ -601,68 +644,74 @@ namespace OLOD_DEMO
                 var ps = new paymentSource();
                 var fieldMap = new abstractCustomizableEntityEntry[0];
 
-                ps.constituentId = constt.id;
                 ps.paymentType = PaymentType.Cash;
-                // donation.PaymentMethod == Enum_PaymentMethod.ACH
-                //                                                 ? PaymentType.Check
-                //                                                 : PaymentType.CreditCard;
-                //ps.creditCardHolderName = donation.Name;
-                //ps.creditCardType = Gateway.Misc.GetCreditCardBrandName(donation.CardBrand);
-                //ps.creditCardNumberDisplay = donation.Last4ofCC;
+                ps.constituentId = constt.id;
+                g.paymentSource = ps;
 
                 var billing = donation.Donor.DonorAddresses.FirstOrDefault(x => x.AddressType == Enum_AddressType.Billing);
                 var nowDate = DateTime.Now;
+
+                g.createDate = nowDate;
+                g.updateDate = nowDate;
+                g.currencyCode = "USD";
+
 
                 g.address = TranslateAddress(billing, false);
                 g.amount = donation.Amount;
                 g.authCode = donation.AuthorizationNumber;
                 g.comments = "Processed by RaiseDonors using card ending in x" + donation.Last4ofCC;
                 if (!string.IsNullOrEmpty(donation.Comment)) g.comments += "Donor provided comment: " + donation.Comment;
-                g.createDate = nowDate;
-                //g.createDateSpecified = true;
-                g.currencyCode = "USD";
                 g.customFieldMap = fieldMap;
                 g.constituentId = constt.id;
                 g.deductible = false;
                 g.deductibleAmount = 0.00m;
                 g.donationDate = nowDate;
-                //g.donationDateSpecified = true;
                 g.email = constt.primaryEmail;
                 g.giftStatus = "Paid";  //Paid, Pending, Not Paid 
                 g.paymentMessage = "Processed thru RaiseDonors";
-                //g.paymentSource = ps;
                 g.paymentType = PaymentType.Cash;
                 g.phone = constt.primaryPhone;
                 g.transactionDate = nowDate;
                 g.transactionDateSpecified = true;
                 g.txRefNum = donation.TransactionId;
 
-                var s = new site { name = "sandbox" };
-                g.site = s;
-
-                //read project codes, and use in setup on which one to use.
-                var dLine = new distributionLine
-                {
-                    customFieldMap = fieldMap,
-                    amount = donation.Amount,
-                    other_motivationCode = donation.MotivationCode,
-                    percentage = 100, 
-                    motivationCode = "",  //what motivated to give - don't use this one
-                    projectCode = "RaiseDonors" //gift designation? 
-                };
-
                 
+                var distLines = new List<distributionLine>();
+                foreach (var d in donation.DonationFundAllocations)
+                {
+                    //read project codes, and use in setup on which one to use.
+                    var fieldMaps = new List<abstractCustomizableEntityEntry>
+                                        {
+                                            createCustomFieldMap("anonymous", 0, constt.id, "distributionline", "anonymous", "false"),
+                                            createCustomFieldMap("recognitionName", 0, constt.id, "distributionline", "recognitionName", donation.Donor.FullName),
+                                            createCustomFieldMap("totalAdjustedAmount", 0, constt.id, "distributionline", "totalAdjustedAmount", d.Amount.ToString("0.00")),
+                                            createCustomFieldMap("taxDeductible", 0, constt.id, "distributionline", "taxDeductible", "true"),
+                                            createCustomFieldMap("source", 0, constt.id, "source", "source", donation.SourceCode),
+                                        };
+
+                    var dLine = new distributionLine
+                    {
+                        customFieldMap = fieldMaps.ToArray(),
+                        amount = d.Amount,
+                        other_motivationCode = donation.MotivationCode,
+                        percentage = Math.Round((d.Amount / donation.Amount) * 100, 2, MidpointRounding.AwayFromZero),
+                        motivationCode = donation.MotivationCode,  //what motivated to give - don't use this one
+                        projectCode = d.Fund.Name //gift designation? 
+                    };
+                    distLines.Add(dLine);
+                }
+
                 //source-code, use customfield on the gift.
                 //project, and source will throw error if not pre-existing.
 
                 //throws error 
                 //Value cannot be null.
                 //Parameter name: source
-                g.distributionLines.ToList().Add(dLine);
+                g.distributionLines = distLines.ToArray();
 
                 var request = new SaveOrUpdateGiftRequest { gift = g, constituentId = constt.id };
                 var response = _client.SaveOrUpdateGift(request);
-
+                
                 Console.WriteLine("Successfully sent gift to OLOD, gift ID: " + response.gift.id + ".");
             }
             catch (FaultException exception)
@@ -682,6 +731,25 @@ namespace OLOD_DEMO
                 var text = exc;
             }
             
+        }
+
+        private static abstractCustomizableEntityEntry createCustomFieldMap(string key, long datatype, long entityId, string entityType, string name, string value)
+        {
+            //read project codes, and use in setup on which one to use.
+            var fm = new abstractCustomizableEntityEntry { key = key };
+
+            var cf = new customField
+            {
+                dataType = datatype,
+                entityId = entityId,
+                entityType = entityType,
+                name = name,
+                value = value
+            };
+
+            fm.value = cf;
+
+            return fm;
         }
       
         private static constituent Find(long Id)
@@ -813,20 +881,39 @@ namespace OLOD_DEMO
         }
 
         #region Init Objects
-        private static string GetRandomNumer()
+        private static readonly System.Random getrandom = new System.Random();
+        public static int NewRandom(int numDigits)
         {
-            var r = new Random(DateTime.Now.Millisecond);
-            return r.Next(0, 9999).ToString();
+            switch (numDigits)
+            {
+                case 1:
+                    return getrandom.Next(0, 9);
+                case 2:
+                    return getrandom.Next(10, 99);
+                case 3:
+                    return getrandom.Next(100, 999);
+                case 4:
+                    return getrandom.Next(1000, 9999);
+                case 5:
+                    return getrandom.Next(10000, 99999);
+                default:
+                    return getrandom.Next(100000, 999999);
+            }
+        }
+
+        public int NewRandomBetween(int lower, int higher)
+        {
+            return getrandom.Next(lower, higher);
         }
 
         public static void InitObjects(ref Donation donation, ref Donor donor)
         {
             donor = new Pocos.Donor
                         {
-                            FName = "Sally" + GetRandomNumer(),
-                            LName = "Sues" + GetRandomNumer(),
+                            FName = "Sally" + NewRandom(5),
+                            LName = "Sues" + NewRandom(5),
                             Phone = "(972) 220-1234",
-                            Email = "Sally" + GetRandomNumer() + "@email.com",
+                            Email = "Sally" + NewRandom(5) + "@email.com",
                             NesletterOptIn = true,
                         };
             donor.DonorAddresses.Add(CreateDonorAddress(Enum_AddressType.Billing, donor));
@@ -838,7 +925,6 @@ namespace OLOD_DEMO
         {
             donation = new Pocos.Donation
             {
-                Amount = 100m,
                 AuthorizationNumber = "ABC123_Auth#",
                 CardBrand = Enum_CardBrand.MasterCard,
                 Comment = "Test Comment",
@@ -859,6 +945,30 @@ namespace OLOD_DEMO
             donation.Status = Enum_ChargeStatus.Approved;
             donation.TestMode = false;
             donation.TransactionId = "123-xyz-456-abc";
+
+            for (int i = 0; i < 5; i++)
+            {
+                var amt = (decimal)NewRandom(2);
+                var alloc = new DonationFundAllocation()
+                                {
+                                    Amount = amt,
+                                    Donation = donation,
+                                    DonationId = donation.Id,
+                                    Fund = new Fund()
+                                               {
+                                                   Active = true,
+                                                   Code = "",
+                                                   Description = "",
+                                                   Id = i,
+                                                   IsDeleted = false,
+                                                   Name = FundNamePickList()[i].itemName,
+                                               },
+                                    FundId = i,
+                                };
+                donation.DonationFundAllocations.Add(alloc);
+            }
+
+            donation.Amount = donation.DonationFundAllocations.Sum(x => x.Amount);
         }
 
         protected static DonorAddress CreateDonorAddress(Enum_AddressType type, Pocos.Donor d)

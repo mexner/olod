@@ -49,6 +49,8 @@
     <Compile Include="CustomCredentials.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="POCOS\Address.cs" />
+    <Compile Include="POCOS\Fund.cs" />
+    <Compile Include="POCOS\DonationFundAllocations.cs" />
     <Compile Include="POCOS\Donation.cs" />
     <Compile Include="POCOS\DonationAddress.cs" />
     <Compile Include="POCOS\Donor.cs" />

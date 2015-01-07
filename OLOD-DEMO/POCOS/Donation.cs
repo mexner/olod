@@ -17,6 +17,7 @@ namespace Pocos
         public Donation()
         {
             this.DonationAddresses = new HashSet<DonationAddress>();
+            this.DonationFundAllocations = new HashSet<DonationFundAllocation>();
         }
     
         public long Id { get; set; }
@@ -40,5 +41,6 @@ namespace Pocos
     
         public virtual Donor Donor { get; set; }
         public virtual ICollection<DonationAddress> DonationAddresses { get; set; }
+        public virtual ICollection<DonationFundAllocation> DonationFundAllocations { get; set; }
     }
 }
