@@ -642,7 +642,8 @@ namespace OLOD_DEMO
             {
                 var g = new gift();
                 var ps = new paymentSource();
-                var fieldMap = new abstractCustomizableEntityEntry[0];
+                var fieldMap = new abstractCustomizableEntityEntry[1];
+                fieldMap[0] = createCustomFieldMap("source", 0, constt.id, "source", "source", donation.SourceCode);
 
                 ps.paymentType = PaymentType.Cash;
                 ps.constituentId = constt.id;
@@ -658,7 +659,6 @@ namespace OLOD_DEMO
 
                 g.address = TranslateAddress(billing, false);
                 g.amount = donation.Amount;
-                g.authCode = donation.AuthorizationNumber;
                 g.comments = "Processed by RaiseDonors using card ending in x" + donation.Last4ofCC;
                 if (!string.IsNullOrEmpty(donation.Comment)) g.comments += "Donor provided comment: " + donation.Comment;
                 g.customFieldMap = fieldMap;
@@ -668,13 +668,17 @@ namespace OLOD_DEMO
                 g.donationDate = nowDate;
                 g.email = constt.primaryEmail;
                 g.giftStatus = "Paid";  //Paid, Pending, Not Paid 
-                g.paymentMessage = "Processed thru RaiseDonors";
                 g.paymentType = PaymentType.Cash;
                 g.phone = constt.primaryPhone;
                 g.transactionDate = nowDate;
                 g.transactionDateSpecified = true;
+                
+                //conditionally hide these -- wait for paul's response on what is best.
+                //g.paymentStatus = "";
+                g.paymentMessage = "Processed thru RaiseDonors";
+                g.authCode = donation.AuthorizationNumber;
                 g.txRefNum = donation.TransactionId;
-
+                
                 
                 var distLines = new List<distributionLine>();
                 foreach (var d in donation.DonationFundAllocations)
@@ -686,16 +690,16 @@ namespace OLOD_DEMO
                                             createCustomFieldMap("recognitionName", 0, constt.id, "distributionline", "recognitionName", donation.Donor.FullName),
                                             createCustomFieldMap("totalAdjustedAmount", 0, constt.id, "distributionline", "totalAdjustedAmount", d.Amount.ToString("0.00")),
                                             createCustomFieldMap("taxDeductible", 0, constt.id, "distributionline", "taxDeductible", "true"),
-                                            createCustomFieldMap("source", 0, constt.id, "source", "source", donation.SourceCode),
                                         };
-
+                    
                     var dLine = new distributionLine
                     {
                         customFieldMap = fieldMaps.ToArray(),
                         amount = d.Amount,
+                        amountSpecified = true,
                         other_motivationCode = donation.MotivationCode,
-                        percentage = Math.Round((d.Amount / donation.Amount) * 100, 2, MidpointRounding.AwayFromZero),
-                        motivationCode = donation.MotivationCode,  //what motivated to give - don't use this one
+                        //percentage = Math.Round((d.Amount / donation.Amount) * 100, 2, MidpointRounding.AwayFromZero),
+                        //motivationCode = donation.MotivationCode,  //what motivated to give - don't use this one
                         projectCode = d.Fund.Name //gift designation? 
                     };
                     distLines.Add(dLine);
@@ -941,7 +945,7 @@ namespace OLOD_DEMO
             donation.Notes = "Test from RaiseDonors";
             donation.PaymentMethod = Enum_PaymentMethod.CC;
             donation.Phone = donor.Phone;
-            donation.SourceCode = "custom-source-code";
+            donation.SourceCode = "Online";
             donation.Status = Enum_ChargeStatus.Approved;
             donation.TestMode = false;
             donation.TransactionId = "123-xyz-456-abc";
